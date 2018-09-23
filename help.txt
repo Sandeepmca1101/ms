@@ -1,2 +1,10 @@
 C:\Users\Sandeep\git-localconfig-repository
 /spring-cloud-config-server/git-localconfig-repository
+
+
+  $git add -A  |*
+	$ git status
+    $ mkdir git-localconfig-repository
+    $   cd git-localconfig-repository
+	$Git init
+	$git commit -m "DEV&QA"
