@@ -1,0 +1,5 @@
+package com.in28minutes.ms.currencyexchangeservice;
+
+public class ExchangeValueRepository {
+
+}

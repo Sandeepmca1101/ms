@@ -1,0 +1,13 @@
+package com.in28minutes.ms.currencyexchangeservice;
+
+import java.math.BigDecimal;
+
+public class ExchangeValue {
+ 
+	private Long id ;
+	private String name;
+	private String from ;
+	private String to;
+	private BigDecimal conversion;
+	
+}

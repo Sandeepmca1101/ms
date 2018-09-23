@@ -1,0 +1,9 @@
+package com.in28minutes.ms.currencyexchangeservice;
+
+public class ExchangeValue {
+ 
+	private Long id ;
+	private String name;
+	private String from ;
+	private String to;
+}

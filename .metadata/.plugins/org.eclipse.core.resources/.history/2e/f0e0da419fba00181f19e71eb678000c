@@ -1,0 +1,8 @@
+package com.in28minutes.ms.currencyexchangeservice.Controller;
+
+import org.springframework.web.bind.annotation.RestController;
+
+@RestControllert
+public class CurrencyExchangeController {
+
+}

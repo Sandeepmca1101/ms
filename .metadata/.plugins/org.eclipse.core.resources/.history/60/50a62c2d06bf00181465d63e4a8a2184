@@ -1,0 +1,8 @@
+insert into exchnge_value(if,fro,to,conversion_multiple)
+values(1001,'USD','INR',65);
+insert into exchnge_value(if,fro,to,conversion_multiple)
+values(1001,'AUS','INR',75);
+insert into exchnge_value(if,fro,to,conversion_multiple)
+values(1001,'UKD','INR',85);
+insert into exchnge_value(if,fro,to,conversion_multiple)
+values(1001,'DIN','INR',165);
