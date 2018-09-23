@@ -1,0 +1,2 @@
+C:\Users\Sandeep\git-localconfig-repository
+/spring-cloud-config-server/git-localconfig-repository
