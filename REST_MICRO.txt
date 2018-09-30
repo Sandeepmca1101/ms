@@ -1,0 +1,317 @@
+REST
+========
+Rest Repre state transf Is just a style to design ur resources and how  u expose then using http.rest best use https
+key :
+  :-resource
+  
+  
+  logging.level.org.springframework =debug
+  
+  *DispatecherServlet come from the AutoConfiguration of spring boot
+  *HttpMessageConvertersAutoConfiguration responsible to convert http into json
+  *JacksonAutoConfiguration.Jackson2ObjectMapperBuilderCustomizerConfiguration is responsible for conversion of json to bean and vice versa   
+  * Best Practise when resource is created should return 201 not 200
+  *One more advantage of Springboot need not to worry about validation just start using @Valid and it will include validation-api 
+  
+What is Dispatcher servlet ?
+  It is front controller who handles are request and know which one is right controller for the /request
+  It found the class spring boot starter web and that having dependency on spring mvc therefore  disptacher servlet  
+
+Who is configuring disptacher servlet ?  
+  Spring boot auto configuration is responsible for loading all dependency
+  
+Userdefined class into json ?
+  Because of message converter and jackson 
+
+Who is configuring the error mapping ?
+  Spring boot autoconfiguration 
+  
+*For created resource return the url for that ResponseEntity(extension of http to return url) is used to return the url
+   servletUriComponentBuilder ->from current req    
+   servletUriComponentBuilder.fromCurrent().path("{id}").buildandExpand()
+
+EXCEPTIONHANDLING
+=================  
+*Check for all possible exceptions and create userdefined eceptions u can use@ResponseStatus(HttpStatus.NOT_FOUND)
+	this is the good response for the consumer   
+*ResponseEntityExceptionHandler.class provided by spring is abstract class provide centralized exception handling across all methods/classes
+*Write one custom class according to ur response message e.g string name date msg then    
+*@ControllerAdvice
+   First try to use spring exception handler other wise create customize exceptionhandling for that 
+   Step 1:- create one class mark the annotaion @controllerAdvice and @RestController and extends ResponseEntityExceptionHandler
+   Step 2:-	@ExceptionHandler(Exception.class) or @ExceptionHandler(UserNotFoundException.class)
+   Step 3:- Write your method and throw the object of the exception class you created it will throw userdefined status 
+   
+   @ControllerAdvice
+   @RestController
+   public class CustomizedResponseEntity extends ResponseEntityExceptionHandler {
+	
+   @ExceptionHandler(Exception.class)
+   public final ResponseEntity<Object> handleAllException(Exception ex, WebRequest request) throws Exception {
+	   ExceptionHandling exceptionHandling = new ExceptionHandling(ex.getMessage(), request.getDescription(false),new Date());
+	   return new ResponseEntity(exceptionHandling,HttpStatus.INTERNAL_SERVER_ERROR);
+     }
+	 
+VALIDATION
+=============
+  validation-api.jar provides all validation 
+   @Valid in controller  ->@Size on bean -->it will throw 401 bad requ error
+   for more specification create customExceptionclass as above add method and will print details of exception that will be useful 
+    for the consumer here use getBindingResult is very important
+	
+	pick one method from ResponseEntity Class
+	 @Override
+	public ResponseEntity<Object> handleMethodArgumentNotValid(
+			MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+	   ExceptionHandling exceptionHandling = new ExceptionHandling(ex.getMessage(), ex.getBindingResult().toString(),new Date());
+		
+		return new ResponseEntity(exceptionHandling,HttpStatus.BAD_REQUEST);
+	}
+HATEOS
+========
+hypermedia as the engine of the application state       
+
+I18N
+====
+Step 1: Create a bean localResolver having dedfault value    
+             @Bean
+	    public LocalResolver localResolver() {
+		SessionLocaleResolver ls=new SessionLocaleResolver();
+		ls.setDefaultLocale(Locale.US);
+		return null;
+		
+	    }
+Step 2: create  ResourceBundleMessageResource set base name (default name of properties file like "message" for message.hindi,message.US
+Step 3 @Autowired properties file use @RequestHeader give parameter like Accept-language and Local here local refering the bean LocalResolver	
+
+@Autowired
+	private MessageSource msg;
+	
+	@GetMapping("/hin")
+	public String hi18n(@RequestHeader(name="AZQ",required=false) Locale l) {
+		return msg.getMessage("good.morning.message",null, l);
+	}
+	
+	In Property File ==>good.morning.message=NAmaste
+
+Actuator  (Monitoring )
+============	
+	to find the health of application and if app low find out the cause 
+	spring-boot-starter-actuator
+	
+	in proper.file =>management.endpoints.web.exposure.include=*
+	open in hal browser =>http://localhost:8080/browser/index.html#/ then ui comes 
+	
+Filters
+===========
+  
+ when there is need change the response of bean class we go for filter .
+suppose response returning name age dob and i want only name age display theere we can use filer 
+@JsonIgnore or @JsonIgnoreProperties(value= {"filed1","field3"}) but if you change name former will not work but all are staic filter 
+means you have to define static field  
+Set<String> s=new HashSet<>();
+		s.add("filed3");
+		s.add("filed1");
+		SimpleBeanPropertyFilter filter=new SimpleBeanPropertyFilter.FilterExceptFilter(s);
+		
+		FilterProvider  mappinng=new SimpleFilterProvider().addFilter("SomeBeanFilter", filter);
+		//mapping.setFilters(filter);
+		MappingJacksonValue mapping=new MappingJacksonValue(somebean);
+		mapping.setFilters(mappinng);
+         
+		 *URL Verisioning 
+		 *Param Versioning
+		 *Header Versioning
+         *Request Versioning 
+		 
+		For better results use versioning with the request parameter 
+       @GetMapping(value="/person/param", params="version=1")
+	   public Personv1 personv3() {
+		 return new Personv1("Bob charlie");
+	   }		
+		http://localhost:8080/person/param?version=2
+	Header Versioning 
+	===================
+	@GetMapping(value="/person/header", headers="version=1")
+	public Personv1 personv5() {
+		return new Personv1("Bob charlie");
+	}
+	
+Authentication 
+==========
+  Basic
+  Digest
+  OAuth 
+
+  How to enable Basic Authe?
+  By adding Spring-boot-starter-security
+  it will generate a password every time have to give inthe req default username user and password added 
+    only then hit the service otherwise 401 unauthorized   
+	
+JPA
+========	
+	http://localhost:8010/h2-console/
+	jdbc:h2:mem:testdb
+    
+    *Repository Should be interface 
+
+
+MIcroSevices   13Aug
+=================
+*Rest +small Deployable units +Cloud Enabled 
+Configuration -One part having full dependency and that fails stop appli so load balancing ?
+Multiple Microservices so multiple configurations need to do 	
+
+Challenges in MS:
+   *Configuration 
+   *Setting Boundries
+   *Dynamic Scalable (loads on different MS different time with diff instances )
+   *Visibility (suppose exception comes how will you ensure which one down )
+   
+  VID4 SPRING CLOUD 
+  =================
+  SPRING CLOUD DEF=>Spring Clouds provides tools for developers to quickly build some of the common patterns  in distributed systems.
+  (e.g configuration management ,service discovery ,circuit breakers,intelligent routing,micro proxy,control bus,one time token,global locks ) 
+  
+  Problem 1 Configuration :Spring cloud provide SpringCloudConfigServer which is centralised Configuration for all MS they are storing in git 
+		          and SpringCloudConfigServer helps to Expose to other parts of the MS.
+				 
+    Naming Server(Eureka) :First all the microservices must be resitered with the naming Server ,second Service Discovery 
+       e.g 
+                              CurrencyCalculationService -> Ribbon(Naming Server )->currencyExchangeService1	   
+																				  ->currencyExchangeService2
+																				  ->currencyExchangeService3
+		so here CurrencyCalculationService ask the naming server give me the names of all the services instancec so naming server return the 
+        url of all the services .
+    
+    Ribbon ->For Client Side Load Balancing , (it is in the middle of the Services and their instances ) 
+    Visibility Issues-> Zipkin Distributed Tracing 
+	Fiegn->(Mechanism to write REST Client )
+    FaultTolerance ->Hystrix (if service is down Hystrix helps to provide Default)
+	Visibility & Monitoring->Zipkin Distributed Tracing 
+
+	Faster Release Cycle With Microservices(e.g Amazon have high traffic in Holiday seasons which is not possible in monolith App)
+	
+**  While creating the client (limits-service) add config client Dependency(for Spring cloud config ),
+	actuator.Devtools Dependency helps to rebuild project automatically.
+
+**  Config Server Dependency for writing the SpringCloudConfigServer 	
+	
+Question :Configuration Easy ?
+
+          First create Normal MS then give the name of spring.application.name=limits-service
+		  then write @Configuration and @ConfigurationProperties("limits-service")->for pointing the limits-service in properties file having all the getter setter with the name of the properties files variables then with the help of @Autowired you can get the values from the properties files 
+        
+		  e.g 
+		  @Component
+		  @ConfigurationProperties("limits-service")
+           public class Configuration {
+	       private int minimum;
+	       private int maximum;	
+ 	       
+            }	
+Vid 67 
+** Link Resource add the folder address in the Project 			
+Ans :- 1.Install Git 
+	   2.create folder for that mkdir then enter that folder cd 
+	   3.git init to make the git repo.
+	   4.Link the folder in the project by linking the Resource in the project.
+	   5.add new files by add -A
+	   6.commit that files by git commit -m "Comments "
+	   7.then in the configServer properties files add that link by spring.cloud.server.uri=file:///location of config
+	 **8.If using SpringCloudConfigServer make sure it is enables by @EnableConfigServer
+	 
+	 
+**#SpringCloudConfigServer reads bootstrap.properties files not application.properties
+**#server.port is having conflicts when using with spring.profies.active 
+** data.sql for inserting the default values in the inmemory Db	 
+
+Vid 71 multi instances of application with different ports ?
+
+Que-1 |-Go to the run Configuration 
+      |-copy the configuration /duplicate and give the different name 
+      |-then go to the arguments  VM arguments  -Dserver.port=8001	  
+
+
+
+	 After this if the values not want from specific and wants from default put in comments 
+
+    $git add -A  |*
+	$ git status
+    $ mkdir git-localconfig-repository
+    $   cd git-localconfig-repository
+	$Git init
+	$git commit -m "DEV&QA"
+
+
+**Properties Files
+  |-spring.appication.name=
+  |-spring.cloud.config.uri=
+  |-spring.profiles.active=
+  
+Que1->Create a multiple instance of the the service ?  
+
+
+
+
+	
+Que1=>How to Call Another RestMS?
+Que2=>Why Feign ?
+Ques=>Ribbon?
+Que3=>Naming Server Objective and why we need ?
+	
+	
+ANs1=> With the help of RestTemplate give url ,return type.class and it will return ResponseEntity object on that variable call getbody()
+       you will get respose from the call.
+        Map<String,String> urivariables=new HashMap<>();
+		urivariables.put("from", from);
+		urivariables.put("to",to);
+		ResponseEntity<CurrencyConversionBean> responseEntity=new RestTemplate().
+				getForEntity(
+						"http://localhost:8000/currency-exchange/from/{from}/to/{to}",CurrencyConversionBean.class,urivariables);
+		CurrencyConversionBean response = responseEntity.getBody();
+
+	to overcome above problems (writing so much code for calling Spring cloud provides feign herits form netflix 
+
+
+**RIBBON ClientSide Load Balancing 		
+	
+Ans2=> to overcome the complexity of restTemplate .Feign is Rest Service client make it easy to call restService or ease the complexity of the RestTemplate 
+       we define proxy and define simple method we call the the proxy
+	   Steps For Feign :
+	   S1-pom.xml    
+	          |-<groupId>org.springframework.cloud</groupId>
+			    <artifactId>spring-cloud-starter-openfeign</artifactId>
+	   
+	   S2->@EnableFeignClients("Nameof Packages");
+	   S3->Create one Interface and use @FeignClient("name="Servicename" ,url="localhost:8000(the called service port) -->ResTemplateurl
+	   S4->Create method in controller ,Autowired the FeignClient ->now on that reference call method it will return same what of RestTemplate
+	   
+Ans3=>Ribbon is used for load balancing when there are multiple instances of the application  it will balance the load by making sure only one instance is 
+      not called again and again . 
+      e.g   
+	     POM changes 
+		 <dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
+		</dependency>
+         Step1.@RibbonClient(name="currency-exchange-service" /* the name of service that you are called in RestTemplate or to be called )
+         Step2.in Properties files =>name of the serviceToBeCalled.ribbon.listOfServers=http://localhost:8080,http://localhost:8001
+		 
+		  currency-exchange-service.ribbon.listOfServers=http://localhost:8000,http://localhost:8001
+		  
+Ans4=> Naming Server Objective is to register of the service and discovery of service .So when the application started first thing of naming server
+       is to register the service and then if need disovery the other Service .
+	   When we are using ribbon for multiple instaces Service there are properties files changes we have to do every time means updating the url of 
+	   adding or removing  so to overcome this we have naming server Concept and we are using Eureka Naming Server 
+	   
+	   So to setup Eureka :- Download Eureka Server,Cofig client devtools etc jars
+	   Step2: EnableEurekaServer with SpringBootApplication Annotation
+	   Step3:eureka.client.register-with-eureka =false ,Eureka.client.fetch-registry=false
+	   
+	   
+	   
+	   
+	   
+	   
+	   
