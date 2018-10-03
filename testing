@@ -1,0 +1,170 @@
+warning: LF will be replaced by CRLF in currency-conversion-service/pom.xml.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in currency-conversion-service/src/main/java/com/example/mc/currencyconversionservice/CurrencyConversionServiceApplication.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in currency-conversion-service/src/main/resources/application.properties.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in currency-exchange-service/pom.xml.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in currency-exchange-service/src/main/java/com/in28minutes/ms/currencyexchangeservice/CurrencyExchangeServiceApplication.java.
+The file will have its original line endings in your working directory.
+warning: LF will be replaced by CRLF in currency-exchange-service/src/main/resources/application.properties.
+The file will have its original line endings in your working directory.
+[1mdiff --git a/currency-conversion-service/pom.xml b/currency-conversion-service/pom.xml[m
+[1mindex 1183f0a..fcaf0cf 100644[m
+[1m--- a/currency-conversion-service/pom.xml[m
+[1m+++ b/currency-conversion-service/pom.xml[m
+[36m@@ -57,6 +57,11 @@[m
+ 			<groupId>org.springframework.cloud</groupId>[m
+ 			<artifactId>spring-cloud-starter-netflix-ribbon</artifactId>[m
+ 		</dependency>[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>org.springframework.cloud</groupId>[m
+[32m+[m			[32m<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m[41m		[m
+ 	</dependencies>[m
+ [m
+ 	<dependencyManagement>[m
+[1mdiff --git a/currency-conversion-service/src/main/java/com/example/mc/currencyconversionservice/CurrencyConversionController.java b/currency-conversion-service/src/main/java/com/example/mc/currencyconversionservice/CurrencyConversionController.java[m
+[1mindex 14b958b..e9f3af2 100644[m
+[1m--- a/currency-conversion-service/src/main/java/com/example/mc/currencyconversionservice/CurrencyConversionController.java[m
+[1m+++ b/currency-conversion-service/src/main/java/com/example/mc/currencyconversionservice/CurrencyConversionController.java[m
+[36m@@ -10,34 +10,39 @@[m [mimport org.springframework.web.bind.annotation.GetMapping;[m
+ import org.springframework.web.bind.annotation.PathVariable;[m
+ import org.springframework.web.bind.annotation.RestController;[m
+ import org.springframework.web.client.RestTemplate;[m
+[31m-[m
+ @RestController[m
+ public class CurrencyConversionController {[m
+[31m-	[m
+[32m+[m[41m[m
+ 	@Autowired[m
+[31m-    CurrencyExchangeProxy proxy;[m
+[31m-	[m
+[31m-	@GetMapping("/currency-conversion/from/{from}/to/{to}/quantity/{quantity}")[m
+[31m-	public CurrencyConversionBean currencyConverter(@PathVariable String from,@PathVariable String to,@PathVariable BigDecimal quantity) {[m
+[31m-		[m
+[31m-		Map<String,String> urivariables=new HashMap<>();[m
+[31m-		urivariables.put("from", from);[m
+[31m-		urivariables.put("to",to);[m
+[31m-		ResponseEntity<CurrencyConversionBean> responseEntity=new RestTemplate().[m
+[31m-				getForEntity([m
+[31m-						"http://localhost:8000/currency-exchange/from/{from}/to/{to}",CurrencyConversionBean.class,urivariables);[m
+[32m+[m	[32mprivate CurrencyExchangeProxy proxy;[m[41m[m
+[32m+[m[41m[m
+[32m+[m	[32m@GetMapping("/currency-converter/from/{from}/to/{to}/quantity/{quantity}")[m[41m[m
+[32m+[m	[32mpublic CurrencyConversionBean convertCurrency(@PathVariable String from, @PathVariable String to,[m[41m[m
+[32m+[m			[32m@PathVariable BigDecimal quantity) {[m[41m[m
+[32m+[m[41m[m
+[32m+[m		[32m// Feign - Problem 1[m[41m[m
+[32m+[m		[32mMap<String, String> uriVariables = new HashMap<>();[m[41m[m
+[32m+[m		[32muriVariables.put("from", from);[m[41m[m
+[32m+[m		[32muriVariables.put("to", to);[m[41m[m
+[32m+[m[41m[m
+[32m+[m		[32mResponseEntity<CurrencyConversionBean> responseEntity = new RestTemplate().getForEntity([m[41m[m
+[32m+[m				[32m"http://localhost:8000/currency-exchange/from/{from}/to/{to}", CurrencyConversionBean.class,[m[41m[m
+[32m+[m				[32muriVariables);[m[41m[m
+[32m+[m[41m[m
+ 		CurrencyConversionBean response = responseEntity.getBody();[m
+ [m
+[31m-		return new CurrencyConversionBean([m
+[31m-				response.getId(),from,to,response.getConversionMultiple(),quantity,quantity.multiply(response.getConversionMultiple()),response.getPort());[m
+[32m+[m		[32mreturn new CurrencyConversionBean(response.getId(), from, to, response.getConversionMultiple(), quantity,[m[41m[m
+[32m+[m				[32mquantity.multiply(response.getConversionMultiple()), response.getPort());[m[41m[m
+ 	}[m
+[31m-	[m
+[31m-	@GetMapping("/currency-conversion-feign/from/{from}/to/{to}/quantity/{quantity}")[m
+[31m-	public CurrencyConversionBean currencyConverterFeign(@PathVariable String from,@PathVariable String to,@PathVariable BigDecimal quantity) {[m
+[32m+[m[41m[m
+[32m+[m	[32m@GetMapping("/currency-converter-feign/from/{from}/to/{to}/quantity/{quantity}")[m[41m[m
+[32m+[m	[32mpublic CurrencyConversionBean convertCurrencyFeign(@PathVariable String from, @PathVariable String to,[m[41m[m
+[32m+[m			[32m@PathVariable BigDecimal quantity) {[m[41m[m
+ [m
+ 		CurrencyConversionBean response = proxy.getExchangeValue(from, to);[m
+ [m
+[31m-		return new CurrencyConversionBean([m
+[31m-				response.getId(),from,to,response.getConversionMultiple(),quantity,quantity.multiply(response.getConversionMultiple()),response.getPort());[m
+[32m+[m		[32mreturn new CurrencyConversionBean(response.getId(), from, to, response.getConversionMultiple(), quantity,[m[41m[m
+[32m+[m				[32mquantity.multiply(response.getConversionMultiple()), response.getPort());[m[41m[m
+ 	}[m
+[31m-}[m
+[32m+[m[41m[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+[1mdiff --git a/currency-conversion-service/src/main/java/com/example/mc/currencyconversionservice/CurrencyConversionServiceApplication.java b/currency-conversion-service/src/main/java/com/example/mc/currencyconversionservice/CurrencyConversionServiceApplication.java[m
+[1mindex 39402fd..99d7ff3 100644[m
+[1m--- a/currency-conversion-service/src/main/java/com/example/mc/currencyconversionservice/CurrencyConversionServiceApplication.java[m
+[1m+++ b/currency-conversion-service/src/main/java/com/example/mc/currencyconversionservice/CurrencyConversionServiceApplication.java[m
+[36m@@ -2,10 +2,12 @@[m [mpackage com.example.mc.currencyconversionservice;[m
+ [m
+ import org.springframework.boot.SpringApplication;[m
+ import org.springframework.boot.autoconfigure.SpringBootApplication;[m
+[32m+[m[32mimport org.springframework.cloud.client.discovery.EnableDiscoveryClient;[m
+ import org.springframework.cloud.openfeign.EnableFeignClients;[m
+ [m
+ @SpringBootApplication[m
+ @EnableFeignClients("com.example.mc.currencyconversionservice")[m
+[32m+[m[32m//@EnableDiscoveryClient[m
+ public class CurrencyConversionServiceApplication {[m
+ [m
+ 	public static void main(String[] args) {[m
+[1mdiff --git a/currency-conversion-service/src/main/resources/application.properties b/currency-conversion-service/src/main/resources/application.properties[m
+[1mindex 9fe3a0c..c9b88b9 100644[m
+[1m--- a/currency-conversion-service/src/main/resources/application.properties[m
+[1m+++ b/currency-conversion-service/src/main/resources/application.properties[m
+[36m@@ -1,4 +1,6 @@[m
+ spring.application.name=currency-conversion-service[m
+ server.port=8100[m
+[32m+[m[32meureka.client.service-url.default-zone=http://localhost:8761/eureka[m
+[32m+[m
+[32m+[m[32m#currency-exchange-service.ribbon.listOfServers=http://localhost:8000,http://localhost:8001[m
+ [m
+[31m-currency-exchange-service.ribbon.listOfServers=http://localhost:8000,http://localhost:8001[m
+\ No newline at end of file[m
+[1mdiff --git a/currency-exchange-service/pom.xml b/currency-exchange-service/pom.xml[m
+[1mindex 1258faa..40abbac 100644[m
+[1m--- a/currency-exchange-service/pom.xml[m
+[1m+++ b/currency-exchange-service/pom.xml[m
+[36m@@ -57,6 +57,10 @@[m
+ 			<artifactId>spring-boot-starter-test</artifactId>[m
+ 			<scope>test</scope>[m
+ 		</dependency>[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>org.springframework.cloud</groupId>[m
+[32m+[m			[32m<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>[m
+[32m+[m		[32m</dependency>[m
+ 	</dependencies>[m
+ [m
+ 	<dependencyManagement>[m
+[1mdiff --git a/currency-exchange-service/src/main/java/com/in28minutes/ms/currencyexchangeservice/CurrencyExchangeServiceApplication.java b/currency-exchange-service/src/main/java/com/in28minutes/ms/currencyexchangeservice/CurrencyExchangeServiceApplication.java[m
+[1mindex 1a18c92..9e15483 100644[m
+[1m--- a/currency-exchange-service/src/main/java/com/in28minutes/ms/currencyexchangeservice/CurrencyExchangeServiceApplication.java[m
+[1m+++ b/currency-exchange-service/src/main/java/com/in28minutes/ms/currencyexchangeservice/CurrencyExchangeServiceApplication.java[m
+[36m@@ -2,8 +2,10 @@[m [mpackage com.in28minutes.ms.currencyexchangeservice;[m
+ [m
+ import org.springframework.boot.SpringApplication;[m
+ import org.springframework.boot.autoconfigure.SpringBootApplication;[m
+[32m+[m[32mimport org.springframework.cloud.client.discovery.EnableDiscoveryClient;[m
+ [m
+ @SpringBootApplication[m
+[32m+[m[32m//@EnableDiscoveryClient[m
+ public class CurrencyExchangeServiceApplication {[m
+ [m
+ 	public static void main(String[] args) {[m
+[1mdiff --git a/currency-exchange-service/src/main/resources/application.properties b/currency-exchange-service/src/main/resources/application.properties[m
+[1mindex 85c2872..a3688a2 100644[m
+[1m--- a/currency-exchange-service/src/main/resources/application.properties[m
+[1m+++ b/currency-exchange-service/src/main/resources/application.properties[m
+[36m@@ -1,5 +1,7 @@[m
+[31m-spring.application.name=currency-exchange-service [m
+[32m+[m[32mspring.application.name=currency-exchange-service[m
+ server.port=8000[m
+ [m
+ spring.jpa.show-sql=true[m
+[31m-spring.h2.console.enabled=true[m
+\ No newline at end of file[m
+[32m+[m[32mspring.h2.console.enabled=true[m
+[32m+[m
+[32m+[m[32meureka.client.service-url.default-zone=http://localhost:8761/eureka[m
+\ No newline at end of file[m
