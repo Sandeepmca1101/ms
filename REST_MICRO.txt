@@ -308,6 +308,9 @@ Ans4=> Naming Server Objective is to register of the service and discovery of se
 	   So to setup Eureka :- Download Eureka Server,Cofig client devtools etc jars
 	   Step2: EnableEurekaServer with SpringBootApplication Annotation
 	   Step3:eureka.client.register-with-eureka =false ,Eureka.client.fetch-registry=false
+	   Step4:@EnableDiscoveryClient()
+	   Step5:eureka.client.service-url.default-zone="URLwith Port of Eureka " ,http://localhost:8761/eureka
+	   Step6:POM changes spring-cloud-starter-netflix-eureka-client
 	   
 	   
 	   
