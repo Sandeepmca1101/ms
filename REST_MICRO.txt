@@ -259,7 +259,7 @@ Que1=>How to Call Another RestMS?
 Que2=>Why Feign ?
 Ques=>Ribbon?
 Que3=>Naming Server Objective and why we need ?
-	
+Que4=>API Gateways why?	(**Zuul ->Inteligent and programmable routing with spring-cloud-netflix zuul**)
 	
 ANs1=> With the help of RestTemplate give url ,return type.class and it will return ResponseEntity object on that variable call getbody()
        you will get respose from the call.
@@ -314,7 +314,20 @@ Ans4=> Naming Server Objective is to register of the service and discovery of se
 	   
 	   
 	   
-	   
+Ans5=> API Gateways uses for  
+        |-Authorization ,Authentication and sescurity 
+		|-RateLimits
+		|-Fault Tolerance
+		|-Service Aggregation
+		
+		So when Zuul runnig to see in the eureka we need Eureka Discovery 
+		Dependency ->Zuul,EurekaDiscovery ,Actuator ,Devttols
+		
+		@EnableZuulProxy ->On the Zuul Servver you have to enable this 
+		@EnableDiscoveryClient 
+		
+		Write one component that extends ZuulFilter having abstract methods like run,should filter,filterOrder,type 
+		
 	   
 	   
 	   
