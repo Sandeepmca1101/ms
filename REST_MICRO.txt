@@ -315,18 +315,31 @@ Ans4=> Naming Server Objective is to register of the service and discovery of se
 	   
 	   
 Ans5=> API Gateways uses for  
-        |-Authorization ,Authentication and sescurity 
+        |-Authorization ,Authentication and security 
 		|-RateLimits
 		|-Fault Tolerance
 		|-Service Aggregation
 		
-		So when Zuul runnig to see in the eureka we need Eureka Discovery 
+		So when Zuul runnig to see in the eureka ,we need Eureka Discovery 
 		Dependency ->Zuul,EurekaDiscovery ,Actuator ,Devttols
 		
 		@EnableZuulProxy ->On the Zuul Servver you have to enable this 
 		@EnableDiscoveryClient 
 		
 		Write one component that extends ZuulFilter having abstract methods like run,should filter,filterOrder,type 
+		
+		******So the task is logged the request what ever come to system ***
+		for that we are using overidden method filterType() method "pre" out of pre,post,error
+		
+		and in run method we are catching request with the help of requestContext.getCurrentContext().getRequest();
+		
+		http://localhost:PORTNO_OF_Zuul/{application-name}/{service URI}
+		
+		http://localhost:8765/currency-exchange-service/currency-exchange/from/USD/to/INR
+		
+		http://localhost:8000/currency-exchange/from/USD/to/INR
+		
+		API CALL->localhost:8765/currency-conversion-service/currency-converter-feign/from/DIN/to/INR/quantity/3   
 		
 	   
 	   
