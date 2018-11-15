@@ -176,7 +176,7 @@ Challenges in MS:
   Problem 1 Configuration :Spring cloud provide SpringCloudConfigServer which is centralised Configuration for all MS they are storing in git 
 		          and SpringCloudConfigServer helps to Expose to other parts of the MS.
 				 
-    Naming Server(Eureka) :First all the microservices must be resitered with the naming Server ,second Service Discovery 
+    Naming Server(Eureka) :First all the microservices must be registered with the naming Server ,second Service Discovery 
        e.g 
                               CurrencyCalculationService -> Ribbon(Naming Server )->currencyExchangeService1	   
 																				  ->currencyExchangeService2
@@ -200,7 +200,8 @@ Challenges in MS:
 Question :Configuration Easy ?
 
           First create Normal MS then give the name of spring.application.name=limits-service
-		  then write @Configuration and @ConfigurationProperties("limits-service")->for pointing the limits-service in properties file having all the getter setter with the name of the properties files variables then with the help of @Autowired you can get the values from the properties files 
+		  then write @Configuration and @ConfigurationProperties("limits-service")->for pointing the limits-service in properties file having all the 
+		  getter setter with the name of the properties files variables then with the help of @Autowired you can get the values from the properties files 
         
 		  e.g 
 		  @Component
@@ -259,7 +260,9 @@ Que1=>How to Call Another RestMS?
 Que2=>Why Feign ?
 Ques=>Ribbon?
 Que3=>Naming Server Objective and why we need ?
-Que4=>API Gateways why?	(**Zuul ->Inteligent and programmable routing with spring-cloud-netflix zuul**)
+Que4=>API Gateways why?	(**Zuul ->Inteligent and programmable routing with spring-cloud-netflix zuul**)?
+Que5=>Distributed tracing ? (Zipkin)
+Que6=>SpringCloud Slouth ?
 	
 ANs1=> With the help of RestTemplate give url ,return type.class and it will return ResponseEntity object on that variable call getbody()
        you will get respose from the call.
@@ -323,13 +326,14 @@ Ans5=> API Gateways uses for
 		So when Zuul runnig to see in the eureka ,we need Eureka Discovery 
 		Dependency ->Zuul,EurekaDiscovery ,Actuator ,Devttols
 		
-		@EnableZuulProxy ->On the Zuul Servver you have to enable this 
+		@EnableZuulProxy ->On the Zuul Server you have to enable this 
 		@EnableDiscoveryClient 
 		
 		Write one component that extends ZuulFilter having abstract methods like run,should filter,filterOrder,type 
 		
 		******So the task is logged the request what ever come to system ***
-		for that we are using overidden method filterType() method "pre" out of pre,post,error
+		for that we are using overidden method filterType() method "pre" out of pre,post,error 
+		shouldFilter ->Want to track this filter or not
 		
 		and in run method we are catching request with the help of requestContext.getCurrentContext().getRequest();
 		
@@ -341,6 +345,61 @@ Ans5=> API Gateways uses for
 		
 		API CALL->localhost:8765/currency-conversion-service/currency-converter-feign/from/DIN/to/INR/quantity/3   
 		
+		NOTE:Zuul uses app name in the url to talk to Eureka and find the url of the service .
+		 e.g 	http://localhost:PORTNO_OF_Zuul/{application-name}/{service URI}
+		 
+********************************vid 91	   
+	   http://localhost:8765/currency-conversion-service/currency-converter-feign/from/DIN/to/INR/quantity/3  
+	   CurrencyConverter Service feign first called and call CurrencyExchange Service,We are making every ms call pass through Zuul so that we can track each requ.
+********************************
+
+
+		 
+ Ans6 :There is small defects in the microservices and you have to debug so when there are n no of components are there it will be difficult 
+       So for that we have distributed tracing 
+       One place where i will go and see what will happen with the specific request.
+	      or 
+	   One single centralised location where i can see complete chain of what happen with a specific request 	   
+ 		
+	   So they are using request unique id (Spring cloud slouth assign unique req id ) and zipkin (distributed tracing )is used for	
+	    call the log from all services and collect in Rabbit MQ and put in zipkin and then track what is happening with the request .
+		
+		
+	  Spring Cloud sleuth --> add unique id to request that will be used to track requst
+    
+      dependency  :-
+             <dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-sleuth</artifactId>
+		</dependency>	  
 	   
 	   
+	   Centralised Logging 
+	   =========================
+	   There are wide variety of centralised logging system e.g ELKStack(Elastic search Log stash and kibana ) ,using elastic searach 
+	   we are searching the log 
+	   but here we are using ZipkinDistributedTracing 
+	   
+	   
+	   When ever there is log message The Microservice Put that in theRabbitMQ and ZipkingTracing server  picking up from queue
+	   
+	   to start Zipking download jar and java -jar zipkin.jar
+	   to start RaabitMq ebin rabbitmq-serviec.bat 
+	   AMQP is default using RabbitMQ Installation
+	   In real all MS components are not running on the same machine so not having any perfomance issue 
+	   SET RABBIT_URI=amqp://localhost  
+	   java -jar zipkin-server-2.5.2-exec.jar
+	   
+	   rabbitmq-plugins.bat enable rabbitmq_management
+	   amqp protocol using RabbitMQ server 
+	   
+	   Why Spring Cloud Bus?
+	   When we have changes in git hub regarding the configuration and we rebuild if we hit the service it will not update the value .
+       So to acheive this we hit the url for refresh after commiting the github 
+	    localhost:8080/actuator/refresh  once we done this it will update the value for the instace of 8080 port and same way we have to do for 
+	   other ports also. So imagine work if there are 100s of MS and each having many configurations .
+	   So to overcome such problems we have Cloud bus ,for all instace there is one url and hit that one and all url are updated .
+	   different Cloud buses kafka ,Rabbitmq etc
+	   
+
 	   
