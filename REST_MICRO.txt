@@ -291,21 +291,23 @@ Ans2=> to overcome the complexity of restTemplate .Feign is Rest Service client 
 	   S4->Create method in controller ,Autowired the FeignClient ->now on that reference call method it will return same what of RestTemplate
 	   
 Ans3=>Ribbon is used for load balancing when there are multiple instances of the application  it will balance the load by making sure only one instance is 
-      not called again and again . 
+      not called again and again  . 
       e.g   
 	     POM changes 
 		 <dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
 		</dependency>
-         Step1.@RibbonClient(name="currency-exchange-service" /* the name of service that you are called in RestTemplate or to be called )
+         Step1.@RibbonClient(name="currency-exchange-service" /* the name of service that you are called in RestTemplate or to be 
+	 called )
          Step2.in Properties files =>name of the serviceToBeCalled.ribbon.listOfServers=http://localhost:8080,http://localhost:8001
 		 
 		  currency-exchange-service.ribbon.listOfServers=http://localhost:8000,http://localhost:8001
 		  
 Ans4=> Naming Server Objective is to register of the service and discovery of service .So when the application started first thing of naming server
        is to register the service and then if need disovery the other Service .
-	   When we are using ribbon for multiple instaces Service there are properties files changes we have to do every time means updating the url of 
+  When we are using ribbon for multiple instaces Service there are properties files changes we have to do every time means 
+  updating the url of 
 	   adding or removing  so to overcome this we have naming server Concept and we are using Eureka Naming Server 
 	   
 	   So to setup Eureka :- Download Eureka Server,Cofig client devtools etc jars
