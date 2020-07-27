@@ -1,9 +1,13 @@
+Exceptional handling in microservices? 
+Design pattern in the MICORSERVICES ?
+WHy Spring boot with Microservices ?
+
+
 REST
 ========
 Rest Repre state transf Is just a style to design ur resources and how  u expose then using http.rest best use https
 key :
   :-resource
-  
   
   logging.level.org.springframework =debug
   
@@ -73,7 +77,7 @@ hypermedia as the engine of the application state
 
 I18N
 ====
-Step 1: Create a bean localResolver having dedfault value    
+Step 1: Create a bean localResolver having default value    
              @Bean
 	    public LocalResolver localResolver() {
 		SessionLocaleResolver ls=new SessionLocaleResolver();
@@ -109,7 +113,7 @@ Filters
 suppose response returning name age dob and i want only name age display theere we can use filer 
 @JsonIgnore or @JsonIgnoreProperties(value= {"filed1","field3"}) but if you change name former will not work but all are staic filter 
 means you have to define static field  
-Set<String> s=new HashSet<>();
+		Set<String> s=new HashSet<>();
 		s.add("filed3");
 		s.add("filed1");
 		SimpleBeanPropertyFilter filter=new SimpleBeanPropertyFilter.FilterExceptFilter(s);
@@ -157,8 +161,10 @@ JPA
 
 
 MIcroSevices   13Aug
-=================
-*Rest +small Deployable units +Cloud Enabled 
+=========================
+"Small autonmous service that work together "
+
+***********Rest +small Deployable units +Cloud Enabled 
 Configuration -One part having full dependency and that fails stop appli so load balancing ?
 Multiple Microservices so multiple configurations need to do 	
 
@@ -193,7 +199,7 @@ Challenges in MS:
 	Faster Release Cycle With Microservices(e.g Amazon have high traffic in Holiday seasons which is not possible in monolith App)
 	
 **  While creating the client (limits-service) add config client Dependency(for Spring cloud config ),
-	actuator.Devtools Dependency helps to rebuild project automatically.
+	actuator.Devtools Dependency helps to r"ebuild project automatically.
 
 **  Config Server Dependency for writing the SpringCloudConfigServer 	
 	
@@ -219,6 +225,8 @@ Ans :- 1.Install Git
 	   4.Link the folder in the project by linking the Resource in the project.
 	   5.add new files by add -A
 	   6.commit that files by git commit -m "Comments "
+	        |->git remote add origin https://github.com/Sandeepmca1101/ngProject.git  first link with the new Repo
+			|->git push origin master 
 	   7.then in the configServer properties files add that link by spring.cloud.server.uri=file:///location of config
 	 **8.If using SpringCloudConfigServer make sure it is enables by @EnableConfigServer
 	 
@@ -291,23 +299,21 @@ Ans2=> to overcome the complexity of restTemplate .Feign is Rest Service client 
 	   S4->Create method in controller ,Autowired the FeignClient ->now on that reference call method it will return same what of RestTemplate
 	   
 Ans3=>Ribbon is used for load balancing when there are multiple instances of the application  it will balance the load by making sure only one instance is 
-      not called again and again  . 
+      not called again and again . 
       e.g   
 	     POM changes 
 		 <dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
 		</dependency>
-         Step1.@RibbonClient(name="currency-exchange-service" /* the name of service that you are called in RestTemplate or to be 
-	 called )
+         Step1.@RibbonClient(name="currency-exchange-service" /* the name of service that you are called in RestTemplate or to be called )
          Step2.in Properties files =>name of the serviceToBeCalled.ribbon.listOfServers=http://localhost:8080,http://localhost:8001
 		 
 		  currency-exchange-service.ribbon.listOfServers=http://localhost:8000,http://localhost:8001
 		  
 Ans4=> Naming Server Objective is to register of the service and discovery of service .So when the application started first thing of naming server
        is to register the service and then if need disovery the other Service .
-  When we are using ribbon for multiple instaces Service there are properties files changes we have to do every time means 
-  updating the url of 
+	   When we are using ribbon for multiple instaces Service there are properties files changes we have to do every time means updating the url of 
 	   adding or removing  so to overcome this we have naming server Concept and we are using Eureka Naming Server 
 	   
 	   So to setup Eureka :- Download Eureka Server,Cofig client devtools etc jars
@@ -404,4 +410,4 @@ Ans5=> API Gateways uses for
 	   different Cloud buses kafka ,Rabbitmq etc
 	   
 
-	   
+	   SMALL->INDEPENDENT DEPLOYABLE->SIMPLE COMMUNICATIONS(httpso most are restful )->STATELESS(SO that we can dynamic scaleup)->AUTOMATED BUILD &DEPLOYEMENT
